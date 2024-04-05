@@ -1,0 +1,20 @@
+apiVersion: sqs.aws.crossplane.io/v1beta1
+kind: Queue
+metadata:
+  name: test-queue-direct-mr
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    region: us-west-2
+    delaySeconds: 1
+    tags:
+      Application: test-queue-direct-mr
+      brand: Runtime
+      team: RCO
+      costCenter: "90515"
+      assetProtectionLevel: "99"
+  providerConfigRef:
+    name: crossplane-provider-config

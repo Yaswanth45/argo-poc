@@ -1,0 +1,65 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xunstructuredxrds.test.com
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  claimNames:
+    kind: UnstructuredXrd
+    plural: unstructuredxrds
+  group: test.com
+  names:
+    kind: XUnstructuredXrd
+    plural: xunstructuredxrds
+  versions:
+    - name: v1alpha1
+      referenceable: true
+      served: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                deletionPolicy:
+                  type: string
+                parameters:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  labels:
+    expediagroup.com/provider: provider-aws
+  name: xunstructuredxrd.test.com
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  compositeTypeRef:
+    apiVersion: test.com/v1alpha1
+    kind: XUnstructuredXrd
+  resources:
+    - name: Bucket-with-unstructured-xrd
+      patches:
+        - fromFieldPath: spec.deletionPolicy
+          toFieldPath: spec.deletionPolicy
+          type: FromCompositeFieldPath
+          policy:
+            fromFieldPath: Required
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.parameters
+          toFieldPath: spec.forProvider
+          policy:
+            fromFieldPath: Required
+      base:
+        apiVersion: s3.aws.crossplane.io/v1beta1
+        kind: Bucket
+        spec:
+          providerConfigRef:
+            name: crossplane-provider-config

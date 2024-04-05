@@ -1,0 +1,23 @@
+apiVersion: test.com/v1alpha1
+kind: UnstructuredXrd
+metadata:
+  name: test-s3-bucket
+  namespace: runtime-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  deletionPolicy: Delete
+  parameters:
+    acl: private
+    locationConstraint: us-west-2
+    objectOwnership: BucketOwnerPreferred
+    publicAccessBlockConfiguration:
+      blockPublicAcls: true
+      blockPublicPolicy: true
+      ignorePublicAcls: true
+      restrictPublicBuckets: true
+    tagging:
+      tagSet:
+        - key: Application
+          value: test-application
