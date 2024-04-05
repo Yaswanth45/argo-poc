@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: s3-bucket-claim
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: crossplane-composition-project
+  source:
+    chart: claim-helm-charts
+    repoURL: https://Yaswanth45.github.io/claim-helm-charts
+    targetRevision: 0.1.2
+    helm:
+      releaseName: claim-helm-charts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: runtime-demo
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m

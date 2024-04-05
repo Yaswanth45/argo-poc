@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: crossplane-composition-project
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: My ArgoCD Project
+  destinations:
+    - namespace: crossplane
+      server: https://kubernetes.default.svc
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    - namespace: runtime-demo
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - https://charts.crossplane.io/stable
+    - https://Yaswanth45.github.io/helm-charts
+    - https://Yaswanth45.github.io/claim-helm-charts
+    - https://github.com/Yaswanth45/argo-poc.git
+      
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+    - group: 'policy'
+      kind: PodSecurityPolicy
+    - group: 'apiextensions.k8s.io'
+      kind: CustomResourceDefinition
+    - group: 'pkg.crossplane.io'
+      kind: Configuration
+    - group: 'pkg.crossplane.io'
+      kind: Lock
+    - group: 'pkg.crossplane.io'
+      kind: Provider
+    - group: 'aws.crossplane.io'
+      kind: ProviderConfig
+    - group: 'pkg.crossplane.io'
+      kind: ControllerConfig
+    - group: 'sqs.aws.crossplane.io'
+      kind: Queue
+    - group: 'apiextensions.crossplane.io'
+      kind: CompositeResourceDefinition
+    - group: 'apiextensions.crossplane.io'
+      kind: CompositeResource
+    - group: 'apiextensions.crossplane.io'
+      kind: Composition
+    - group: 'test.com'
+      kind: Unstructured
